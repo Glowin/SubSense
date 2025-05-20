@@ -19,11 +19,11 @@
     * 为什么选择 Trae + Supabase + Vercel 技术栈？（AI 提效、全能后端、便捷部署）
     * 完成这个系列你能学到什么？（从想法到盈利的全流程实践）
 2. 准备工作与环境搭建
-    * 下载安装 Trae
-    * Vercel账号、Supabase账号
+    * ✅ 下载安装 Trae
+    * ✅ Vercel账号、Supabase账号
 3. 产品需求分析
     * ✅ 梳理订阅管理 App 的 MVP 产品需求和技术选型
-    * 竞品分析：Suno
+    * ✅ 竞品分析：Suno
 3. 后端核心：Supabase 数据库设计与认证
     * 目标： 设计订阅数据的结构，实现用户注册登录功能
     * 订阅管理 App 需要哪些数据？（订阅名称、费用、周期、开始日期、结束日期/提醒日期、备注、用户关联等）
@@ -45,10 +45,10 @@
 
 ### 相关二维码
 
-![](https://i.mij.rip/2025/05/13/ea4487f16c8b1247891f2aa5fe6c408d.jpeg)
-![](https://i.miji.bid/2025/05/13/cf3022c9ebe83fbccf6bbaf4ab4854b7.jpeg)
-![](https://i.miji.bid/2025/05/13/baed079aa639d7caf85f71a86e6e0321.jpeg)
-![](https://i.miji.bid/2025/05/13/1abaa13a4151ea293fb07e6efe57f54f.jpeg)
+![](https://i.miji.bid/2025/05/20/e11561b2d655ccd9ef306218feaef346.jpeg)
+![](https://i.miji.bid/2025/05/20/375eff90dc4e65a76f67e2d37f1bfcd1.jpeg)
+![](https://i.miji.bid/2025/05/20/97a7a26c6cc73e1df797287d66b015af.jpeg)
+![](https://i.miji.bid/2025/05/20/10eb8f9f561ef397e65957b1d15c1109.jpeg)
 
 ## 备注
 
@@ -63,4 +63,6 @@
 ```
 因为我要做MVP版本，请将上面的功能点精简到2个最重要的功能。
 ```
+
+![](https://i.miji.bid/2025/05/20/fb8227e84305e238241614f403ec4aa9.jpeg)
 
