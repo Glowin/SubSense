@@ -25,17 +25,17 @@
     * ✅ 梳理订阅管理 App 的 MVP 产品需求和技术选型
     * ✅ 竞品分析：Suno
 3. 后端核心：Supabase 数据库设计与认证
-    * 目标： 设计订阅数据的结构，实现用户注册登录功能
-    * 订阅管理 App 需要哪些数据？（订阅名称、费用、周期、开始日期、结束日期/提醒日期、备注、用户关联等）
-    * 在 Supabase 中创建数据库表，并设计表之间的关系
-    * 在 Supabase 中配置 Auth
-    * 使用 Trae 辅助编写 Supabase 相关代码
+    * ✅ 目标： 设计订阅数据的结构，实现用户注册登录功能
+    * ✅ 订阅管理 App 需要哪些数据？（订阅名称、费用、周期、开始日期、结束日期/提醒日期、备注、用户关联等）
+    * ✅ 在 Supabase 中创建数据库表，并设计表之间的关系
+    * ✅ 在 Supabase 中配置 Auth
+    * ✅ 使用 Trae 辅助编写 Supabase 相关代码
 4. Web 前端开发：基础界面与 Supabase 连接
-    * 目标： 搭建 App 的基础界面，并与 Supabase 建立连接
-    * 使用 Trae 辅助编写 Web 应用的导航结构、主页/订阅列表页面的基础 UI
-    * 安装 Supabase 客户端库到 App 项目中
-    * 配置 App 连接到 Supabase 项目
-    * 使用 Trae 辅助编写连接代码和简单的 Supabase API 调用
+    * ✅ 目标： 搭建 App 的基础界面，并与 Supabase 建立连接
+    * ✅ 使用 Trae 辅助编写 Web 应用的导航结构、主页/订阅列表页面的基础 UI
+    * ✅ 安装 Supabase 客户端库到 App 项目中
+    * ✅ 配置 App 连接到 Supabase 项目
+    * ✅ 使用 Trae 辅助编写连接代码和简单的 Supabase API 调用
 5. 部署与发布
 
 ## 第二期直播：Trae + SwiftUI 构建 iOS 应用并上线 App Store
