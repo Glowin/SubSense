@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useSubscriptionStore } from '../stores/subscriptionStore'
+import { ElMessage } from 'element-plus'
 
 const route = useRoute()
 const router = useRouter()
@@ -74,23 +75,28 @@ const formRef = ref(null)
 const submitForm = async () => {
   if (!formRef.value) return
   
-  await formRef.value.validate((valid, fields) => {
+  await formRef.value.validate(async (valid, fields) => {
     if (valid) {
-      // 转换费用为数字
-      const submittedData = { ...formData.value, cost: Number(formData.value.cost) }
-      
-      if (isEditMode.value && subscriptionId.value) {
-        // 更新现有订阅
-        subscriptionStore.updateSubscription(subscriptionId.value, submittedData)
-        ElMessage.success('订阅更新成功')
-      } else {
-        // 添加新订阅
-        const newId = subscriptionStore.addSubscription(submittedData)
-        ElMessage.success('订阅添加成功')
+      try {
+        // 转换费用为数字
+        const submittedData = { ...formData.value, cost: Number(formData.value.cost) }
+        
+        if (isEditMode.value && subscriptionId.value) {
+          // 更新现有订阅 - 等待异步操作完成
+          await subscriptionStore.updateSubscription(subscriptionId.value, submittedData)
+          ElMessage.success('订阅更新成功')
+        } else {
+          // 添加新订阅 - 等待异步操作完成
+          await subscriptionStore.addSubscription(submittedData)
+          ElMessage.success('订阅添加成功')
+        }
+        
+        // 返回列表页
+        router.push('/subscriptions')
+      } catch (error) {
+        console.error('保存订阅失败:', error)
+        ElMessage.error(`操作失败: ${error.message || '未知错误'}`)
       }
-      
-      // 返回列表页
-      router.push('/subscriptions')
     } else {
       console.log('表单验证失败', fields)
       ElMessage.error('请完成必填项')

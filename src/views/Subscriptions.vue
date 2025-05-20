@@ -1,13 +1,25 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSubscriptionStore } from '../stores/subscriptionStore'
+import { ElMessage } from 'element-plus'
 
 const router = useRouter()
 const subscriptionStore = useSubscriptionStore()
 const subscriptions = computed(() => subscriptionStore.getAllSubscriptions)
 const billingCycles = subscriptionStore.billingCycles
 const statuses = subscriptionStore.statuses
+
+// 组件挂载时加载订阅数据
+onMounted(async () => {
+  try {
+    await subscriptionStore.fetchSubscriptions()
+    console.log('订阅页面数据加载成功')
+  } catch (error) {
+    console.error('订阅页面数据加载失败:', error)
+    ElMessage.error('加载订阅数据失败，请刷新页面重试')
+  }
+})
 
 // 表格搜索和筛选
 const searchQuery = ref('')
@@ -41,18 +53,33 @@ const editSubscription = (id) => {
 }
 
 // 取消订阅
-const cancelSubscription = (id) => {
-  subscriptionStore.cancelSubscription(id)
+const cancelSubscription = async (id) => {
+  try {
+    await subscriptionStore.cancelSubscription(id)
+    ElMessage.success('订阅已取消')
+  } catch (error) {
+    ElMessage.error('操作失败：' + error.message)
+  }
 }
 
 // 重新激活订阅
-const reactivateSubscription = (id) => {
-  subscriptionStore.reactivateSubscription(id)
+const reactivateSubscription = async (id) => {
+  try {
+    await subscriptionStore.reactivateSubscription(id)
+    ElMessage.success('订阅已激活')
+  } catch (error) {
+    ElMessage.error('操作失败：' + error.message)
+  }
 }
 
 // 删除订阅
-const deleteSubscription = (id) => {
-  subscriptionStore.deleteSubscription(id)
+const deleteSubscription = async (id) => {
+  try {
+    await subscriptionStore.deleteSubscription(id)
+    ElMessage.success('订阅已删除')
+  } catch (error) {
+    ElMessage.error('删除失败：' + error.message)
+  }
 }
 
 // 格式化日期
@@ -107,7 +134,25 @@ const getStatusLabel = (value) => {
     
     <!-- 订阅列表 -->
     <el-card class="subscription-list">
-      <el-table :data="filteredSubscriptions" style="width: 100%">
+      <div v-if="subscriptionStore.isLoading" class="loading-container">
+        <el-skeleton :rows="5" animated />
+      </div>
+      
+      <div v-else-if="subscriptionStore.error" class="error-container">
+        <el-alert
+          title="加载失败"
+          :description="subscriptionStore.error"
+          type="error"
+          show-icon
+        />
+        <el-button class="retry-button" type="primary" @click="subscriptionStore.fetchSubscriptions()">
+          重试
+        </el-button>
+      </div>
+      
+      <el-empty v-else-if="filteredSubscriptions.length === 0" description="暂无订阅数据" />
+      
+      <el-table v-else :data="filteredSubscriptions" style="width: 100%">
         <el-table-column prop="name" label="订阅名称" min-width="120" />
         <el-table-column prop="provider" label="服务提供商" min-width="120" />
         <el-table-column label="费用" min-width="100">
@@ -190,6 +235,15 @@ const getStatusLabel = (value) => {
 
 .subscription-list {
   margin-top: 20px;
+}
+
+.loading-container,
+.error-container {
+  padding: 20px;
+}
+
+.retry-button {
+  margin-top: 15px;
 }
 
 @media (max-width: 768px) {

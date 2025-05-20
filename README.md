@@ -69,3 +69,9 @@ CREATE INDEX idx_subscriptions_user_id ON subscriptions(user_id);
 CREATE INDEX idx_subscriptions_status ON subscriptions(status);
 CREATE INDEX idx_subscriptions_renewal_date ON subscriptions(renewal_date);
 ```
+
+# supabase 配置
+
+Project URL：https://xyzgqiepcbrjutuonaik.supabase.co
+anon/public key：eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5emdxaWVwY2JyanV0dW9uYWlrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDc3Mzg4MDYsImV4cCI6MjA2MzMxNDgwNn0.HknyWaMonVtRsQBDjf87peQO1Ll1Sw5KLg50zsSvSpI
+service_role key：xxxxx

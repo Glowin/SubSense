@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
+import { subscriptionService } from '../lib/supabase'
+import { useAuthStore } from './authStore'
 
-// 模拟 Supabase 数据
+// 保留模拟数据作为备份，实际将使用Supabase数据
 const mockSubscriptions = [
   {
     id: 1,
@@ -76,7 +78,9 @@ const mockSubscriptions = [
 
 export const useSubscriptionStore = defineStore('subscription', {
   state: () => ({
-    subscriptions: [...mockSubscriptions],
+    subscriptions: [],
+    isLoading: false,
+    error: null,
     categories: ['流媒体', '音乐', '购物', '工作', '有声读物', '游戏', '云服务', '其他'],
     billingCycles: [
       { value: 'monthly', label: '月付' },
@@ -95,6 +99,135 @@ export const useSubscriptionStore = defineStore('subscription', {
       { value: 'cancelled', label: '已取消' }
     ]
   }),
+  
+  actions: {
+    // 从Supabase加载订阅数据
+    async fetchSubscriptions() {
+      const authStore = useAuthStore()
+      if (!authStore.isAuthenticated) return
+      
+      this.isLoading = true
+      this.error = null
+      
+      try {
+        const userId = authStore.user.id
+        const { data, error } = await subscriptionService.getAllSubscriptions(userId)
+        
+        if (error) throw error
+        
+        this.subscriptions = data || []
+      } catch (err) {
+        console.error('获取订阅失败:', err)
+        this.error = err.message
+        // 如果API失败，使用模拟数据（仅开发环境）
+        if (import.meta.env.DEV) {
+          this.subscriptions = [...mockSubscriptions]
+        }
+      } finally {
+        this.isLoading = false
+      }
+    },
+    
+    // 添加新订阅
+    async addSubscription(subscription) {
+      const authStore = useAuthStore()
+      if (!authStore.isAuthenticated) return
+      
+      this.isLoading = true
+      this.error = null
+      
+      try {
+        // 添加用户ID
+        const newSubscription = {
+          ...subscription,
+          user_id: authStore.user.id
+        }
+        
+        const { data, error } = await subscriptionService.createSubscription(newSubscription)
+        if (error) throw error
+        
+        // 更新本地状态
+        if (data && data.length > 0) {
+          this.subscriptions.push(data[0])
+        }
+        
+        return data[0]
+      } catch (err) {
+        console.error('添加订阅失败:', err)
+        this.error = err.message
+        throw err
+      } finally {
+        this.isLoading = false
+      }
+    },
+    
+    // 更新订阅
+    async updateSubscription(id, subscription) {
+      const authStore = useAuthStore()
+      if (!authStore.isAuthenticated) return
+      
+      this.isLoading = true
+      this.error = null
+      
+      try {
+        const { data, error } = await subscriptionService.updateSubscription(id, subscription)
+        if (error) throw error
+        
+        // 更新本地状态
+        const index = this.subscriptions.findIndex(sub => sub.id === id)
+        if (index !== -1 && data && data.length > 0) {
+          this.subscriptions[index] = data[0]
+        }
+        
+        return data[0]
+      } catch (err) {
+        console.error('更新订阅失败:', err)
+        this.error = err.message
+        throw err
+      } finally {
+        this.isLoading = false
+      }
+    },
+    
+    // 删除订阅
+    async deleteSubscription(id) {
+      const authStore = useAuthStore()
+      if (!authStore.isAuthenticated) return
+      
+      this.isLoading = true
+      this.error = null
+      
+      try {
+        const { error } = await subscriptionService.deleteSubscription(id)
+        if (error) throw error
+        
+        // 更新本地状态
+        this.subscriptions = this.subscriptions.filter(sub => sub.id !== id)
+      } catch (err) {
+        console.error('删除订阅失败:', err)
+        this.error = err.message
+        throw err
+      } finally {
+        this.isLoading = false
+      }
+    },
+    
+    // 取消订阅（更改状态）
+    async cancelSubscription(id) {
+      const subscription = this.subscriptions.find(sub => sub.id === id)
+      if (!subscription) return
+      
+      return this.updateSubscription(id, { ...subscription, status: 'cancelled' })
+    },
+    
+    // 重新激活订阅
+    async reactivateSubscription(id) {
+      const subscription = this.subscriptions.find(sub => sub.id === id)
+      if (!subscription) return
+      
+      return this.updateSubscription(id, { ...subscription, status: 'active' })
+    }
+  },
   
   getters: {
     // 获取所有订阅
@@ -175,43 +308,126 @@ export const useSubscriptionStore = defineStore('subscription', {
   },
   
   actions: {
+    // 从Supabase加载订阅数据
+    async fetchSubscriptions() {
+      const authStore = useAuthStore()
+      if (!authStore.isAuthenticated) return
+      
+      this.isLoading = true
+      this.error = null
+      
+      try {
+        const userId = authStore.user.id
+        const { data, error } = await subscriptionService.getAllSubscriptions(userId)
+        
+        if (error) throw error
+        
+        this.subscriptions = data || []
+      } catch (err) {
+        console.error('获取订阅失败:', err)
+        this.error = err.message
+        // 如果API失败，使用模拟数据（仅开发环境）
+        if (import.meta.env.DEV) {
+          this.subscriptions = [...mockSubscriptions]
+        }
+      } finally {
+        this.isLoading = false
+      }
+    },
+    
     // 添加新订阅
-    addSubscription(subscription) {
-      const newId = Math.max(0, ...this.subscriptions.map(s => s.id)) + 1
-      this.subscriptions.push({
-        ...subscription,
-        id: newId
-      })
-      return newId
+    async addSubscription(subscription) {
+      const authStore = useAuthStore()
+      if (!authStore.isAuthenticated) return
+      
+      this.isLoading = true
+      this.error = null
+      
+      try {
+        // 添加用户ID
+        const newSubscription = {
+          ...subscription,
+          user_id: authStore.user.id
+        }
+        
+        const { data, error } = await subscriptionService.createSubscription(newSubscription)
+        if (error) throw error
+        
+        // 更新本地状态
+        if (data && data.length > 0) {
+          this.subscriptions.push(data[0])
+          return data[0].id
+        }
+      } catch (err) {
+        console.error('添加订阅失败:', err)
+        this.error = err.message
+        throw err
+      } finally {
+        this.isLoading = false
+      }
     },
     
     // 更新订阅
-    updateSubscription(id, updatedData) {
-      const index = this.subscriptions.findIndex(sub => sub.id === id)
-      if (index !== -1) {
-        this.subscriptions[index] = { ...this.subscriptions[index], ...updatedData }
-        return true
+    async updateSubscription(id, updatedData) {
+      const authStore = useAuthStore()
+      if (!authStore.isAuthenticated) return
+      
+      this.isLoading = true
+      this.error = null
+      
+      try {
+        const { data, error } = await subscriptionService.updateSubscription(id, updatedData)
+        if (error) throw error
+        
+        // 更新本地状态
+        const index = this.subscriptions.findIndex(sub => sub.id === id)
+        if (index !== -1 && data && data.length > 0) {
+          this.subscriptions[index] = data[0]
+          return true
+        }
+      } catch (err) {
+        console.error('更新订阅失败:', err)
+        this.error = err.message
+        throw err
+      } finally {
+        this.isLoading = false
       }
-      return false
     },
     
     // 删除订阅
-    deleteSubscription(id) {
-      const index = this.subscriptions.findIndex(sub => sub.id === id)
-      if (index !== -1) {
-        this.subscriptions.splice(index, 1)
-        return true
+    async deleteSubscription(id) {
+      const authStore = useAuthStore()
+      if (!authStore.isAuthenticated) return
+      
+      this.isLoading = true
+      this.error = null
+      
+      try {
+        const { error } = await subscriptionService.deleteSubscription(id)
+        if (error) throw error
+        
+        // 更新本地状态
+        const index = this.subscriptions.findIndex(sub => sub.id === id)
+        if (index !== -1) {
+          this.subscriptions.splice(index, 1)
+          return true
+        }
+      } catch (err) {
+        console.error('删除订阅失败:', err)
+        this.error = err.message
+        throw err
+      } finally {
+        this.isLoading = false
       }
-      return false
     },
     
     // 取消订阅（将状态改为已取消）
-    cancelSubscription(id) {
+    async cancelSubscription(id) {
       return this.updateSubscription(id, { status: 'cancelled' })
     },
     
     // 重新激活订阅
-    reactivateSubscription(id) {
+    async reactivateSubscription(id) {
       return this.updateSubscription(id, { status: 'active' })
     }
   }
