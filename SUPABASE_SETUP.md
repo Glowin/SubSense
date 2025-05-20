@@ -29,10 +29,10 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFz
 | provider | text | 服务提供商 |
 | cost | numeric | 费用金额 |
 | currency | text | 货币类型 |
-| billingCycle | text | 计费周期 |
-| startDate | date | 开始日期 |
-| renewalDate | date | 续费日期 |
-| paymentMethod | text | 支付方式 |
+| billing_cycle | text | 计费周期 |
+| start_date | date | 开始日期 |
+| renewal_date | date | 续费日期 |
+| payment_method | text | 支付方式 |
 | notes | text | 备注信息 |
 | status | text | 状态 (active/cancelled) |
 | category | text | 分类 |
